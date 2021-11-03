@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+}
+
+group = 'com.company'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://global.repo.jmix.io/repository/public'
+    }
+}
+
+dependencies {
+    api 'io.jmix.ui:jmix-ui:1.1.0'
+    compileOnly 'io.jmix.ui:jmix-ui-widgets:1.1.0'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'demo-widget-addon'
+            from components.java
+        }
+    }
+}
+
+jar {
+    // pack client Java sources
+    with copySpec {
+        from sourceSets.main.allJava
+        include "com/company/dwa/**"
+        duplicatesStrategy = DuplicatesStrategy.WARN
+    }
+    // register exported widgetset
+    manifest {
+        attributes(['Vaadin-Widgetsets': 'com.company.dwa.DemoWidgetAddonWidgets',
+                    'Vaadin-Stylesheets': 'VAADIN/addons/demo-widget-addon/demo-widget-addon.scss'])
+    }
+}
